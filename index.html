@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Touch - 데이터로 설계하는 고교 진학 전략</title>
+    <meta name="description" content="AI 기반 정밀 진학 분석 솔루션 Brain Touch">
+    <style>
+        :root {
+            --primary-dark: #0a2817;
+            --primary-green: #166534;
+            --accent-lime: #84cc16;
+            --accent-emerald: #10b981;
+            --accent-yellow: #fbbf24;
+            --text-light: #f8fafc;
+            --text-gray: #cbd5e1;
+            --card-bg: rgba(22, 101, 52, 0.1);
+            --card-border: rgba(132, 204, 22, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: linear-gradient(135deg, #0a2817 0%, #166534 50%, #0f1f15 100%);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .poster {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+        }
+
+        /* Background Effects */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(132, 204, 22, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(132, 204, 22, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--accent-lime), transparent);
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--accent-emerald), transparent);
+            animation-delay: 5s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 10%;
+            left: 30%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, var(--primary-green), transparent);
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.1); }
+            66% { transform: translate(-30px, 30px) scale(0.9); }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            width: 180px;
+            height: 180px;
+            background: transparent;
+            border-radius: 50%;
+        }
+
+        .logo-text {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-lime), var(--accent-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 40px rgba(132, 204, 22, 0.5);
+        }
+
+        .subtitle {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: var(--accent-lime);
+            font-weight: 700;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.6s; }
+        .section:nth-child(5) { animation-delay: 0.8s; }
+        .section:nth-child(6) { animation-delay: 1s; }
+        .section:nth-child(7) { animation-delay: 1.2s; }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-light);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-lime), var(--accent-emerald));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 25px rgba(132, 204, 22, 0.4);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(22, 101, 52, 0.15), rgba(15, 31, 21, 0.3));
+            border: 2px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(132, 204, 22, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-lime);
+            box-shadow: 0 20px 50px rgba(132, 204, 22, 0.3);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-lime);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+        }
+
+        .card-content {
+            font-size: 16px;
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+
+        /* Problem Section */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .problem-card {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(234, 179, 8, 0.1));
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .problem-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(251, 191, 36, 0.3);
+        }
+
+        .problem-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .problem-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-yellow);
+            margin-bottom: 12px;
+        }
+
+        .problem-text {
+            font-size: 15px;
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(132, 204, 22, 0.1));
+            border: 2px solid var(--accent-emerald);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s;
+        }
+
+        .feature-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.3);
+        }
+
+        .feature-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-emerald);
+            color: var(--primary-dark);
+            font-size: 20px;
+            font-weight: 900;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 40px;
+            margin-bottom: 15px;
+        }
+
+        /* Why Section */
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .why-card {
+            background: linear-gradient(135deg, rgba(132, 204, 22, 0.15), rgba(16, 185, 129, 0.1));
+            border: 2px solid rgba(132, 204, 22, 0.4);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .why-card:hover {
+            transform: translateY(-10px) rotate(2deg);
+            border-color: var(--accent-lime);
+            box-shadow: 0 20px 50px rgba(132, 204, 22, 0.4);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-lime), var(--accent-emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-gray);
+            font-weight: 700;
+        }
+
+        /* Analogy Section */
+        .analogy {
+            background: linear-gradient(135deg, rgba(132, 204, 22, 0.2), rgba(16, 185, 129, 0.15));
+            border: 3px solid var(--accent-lime);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analogy::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 250px;
+            height: 250px;
+            background-image: url('./logo.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.15;
+        }
+
+        .analogy-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--accent-lime);
+            margin-bottom: 20px;
+        }
+
+        .analogy-text {
+            font-size: 18px;
+            line-height: 2;
+            color: var(--text-light);
+        }
+
+        .highlight {
+            color: var(--accent-lime);
+            font-weight: 700;
+            padding: 2px 8px;
+            background: rgba(132, 204, 22, 0.2);
+            border-radius: 4px;
+        }
+
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out 1.4s;
+            animation-fill-mode: both;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--accent-lime), var(--accent-emerald));
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(132, 204, 22, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(132, 204, 22, 0.6);
+        }
+
+        .cta-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .arrow {
+            font-size: 28px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .problem-grid,
+            .why-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .poster {
+                padding: 40px 20px;
+            }
+            .logo-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+            .logo-text {
+                font-size: 36px;
+            }
+            .subtitle {
+                font-size: 22px;
+            }
+            .problem-grid,
+            .why-grid {
+                grid-template-columns: 1fr;
+            }
+            .cta-button {
+                font-size: 20px;
+                padding: 18px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="poster">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="./logo.png" alt="Brain Touch Logo" class="logo">
+                <h1 class="logo-text">BRAIN TOUCH</h1>
+            </div>
+            <p class="subtitle">데이터로 설계하는 고교 진학 전략</p>
+            <p class="tagline">📊 안개를 걷어내는 AI 기반 정밀 진학 분석</p>
+        </header>
+
+        <!-- Problem Section -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">⚠️</span>
+                중학교 성취도 'A'의 착시
+            </h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">🌫️</div>
+                    <h3 class="problem-title">안개 낀 운동장</h3>
+                    <p class="problem-text">절대평가제로 원점수 90점만 넘으면 모두 A. 실제 변별력이 매우 낮습니다.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">📈</div>
+                    <h3 class="problem-title">부풀려진 성적</h3>
+                    <p class="problem-text">지필고사가 낮아도 수행평가로 보완되어 진짜 실력을 오인하기 쉽습니다.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">❄️</div>
+                    <h3 class="problem-title">냉정한 현실</h3>
+                    <p class="problem-text">중학교 전 과목 A 학생이 고교에서 3~4등급까지 하락하는 사례가 빈번합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Technology -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🔬</span>
+                브레인 터치만의 정밀 분석 엔진
+            </h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="card-icon">📐</span>
+                        Z-점수 기반 분석
+                    </h3>
+                    <p class="card-content">
+                        원점수, 평균, 표준편차를 수식에 대입하여 전교 석차와 지역 내 실질 백분위를 산출합니다.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="card-icon">💾</span>
+                        3개년 누적 백데이터
+                    </h3>
+                    <p class="card-content">
+                        희망 고교 선배들의 3년 치 성적 데이터로 예측의 적중률을 극대화했습니다.
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">
+                        <span class="card-icon">🏫</span>
+                        공식 데이터 활용
+                    </h3>
+                    <p class="card-content">
+                        '학교알리미' 공시 데이터를 실시간 반영하여 분석의 객관성을 보장합니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🎯</span>
+                입시 성공을 위한 스마트 내비게이션
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number">1</div>
+                    <h3 class="card-title">고교 예상 등급 확인</h3>
+                    <p class="card-content">
+                        현재 성적으로 특정 고교 진학 시 받게 될 5등급제 및 9등급제 석차 등급을 미리 보여줍니다.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">2</div>
+                    <h3 class="card-title">성적 향상 시뮬레이션</h3>
+                    <p class="card-content">
+                        "4점짜리 한 문제를 더 맞히면 백분위가 5~20% 상승"하는 구체적인 수치로 강력한 학습 동기를 부여합니다.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">3</div>
+                    <h3 class="card-title">전략적 고교 매칭</h3>
+                    <p class="card-content">
+                        학생의 성적 패턴에 맞춰 내신 등급 확보에 가장 유리한 학교를 데이터 기반으로 추천합니다.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">4</div>
+                    <h3 class="card-title">고교학점제 완벽 대비</h3>
+                    <p class="card-content">
+                        강화된 서술형 비중(30%)과 수행평가, 미이수(I) 등급 방지를 위한 체계적인 가이드를 제공합니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Brain Touch -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">⭐</span>
+                왜 브레인 터치인가?
+            </h2>
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="stat-number">다수</div>
+                    <p class="stat-label">누적 학생 데이터</p>
+                </div>
+                <div class="why-card">
+                    <div class="stat-number">최고</div>
+                    <p class="stat-label">수준의 정확성<br>상위권 대학 동일 방식</p>
+                </div>
+                <div class="why-card">
+                    <div class="stat-number">30년+</div>
+                    <p class="stat-label">입시 경력 × AI 알고리즘</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analogy -->
+        <section class="section">
+            <div class="analogy">
+                <h2 class="analogy-title">비유로 보는 브레인 터치</h2>
+                <p class="analogy-text">
+                    중학교 성적표가 <span class="highlight">"모두가 1등처럼 보이는 안개 낀 운동장"</span>이라면,<br>
+                    브레인 터치는 그 안개를 걷어내고 실전 트랙에서 자신의 위치를 정확히 알려주는<br>
+                    <span class="highlight">'고성능 GPS 측정기'</span>입니다.<br><br>
+                    또한 고교학점제라는 <span class="highlight">'선택의 바다'</span>에서<br>
+                    가장 안전하고 빠른 항로를 찾아주는 <span class="highlight">'첨단 기상 레이더'</span> 역할을 수행합니다.
+                </p>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <a href="https://naver.me/FCrCM5lh" target="_blank" rel="noopener noreferrer" class="cta-button">
+                무료사용 신청하기
+                <span class="arrow">→</span>
+            </a>
+        </section>
+    </div>
+</body>
+</html>
